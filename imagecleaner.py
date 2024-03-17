@@ -44,18 +44,7 @@ def inside(A, B, C, P):
         return False
     
 
-def return_rectangle(img):
-    detector = dlib.get_frontal_face_detector()
-    prediction = dlib.shape_predictor("shape_predictor_5_face_landmarks.dat")
-    grayscale = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    rectangle = detector(grayscale, 0)
-    if len(rectangle) > 0:
-        for rect in rectangle:
-            x = rect.left()
-            y = rect.top()
-            w = rect.right()
-            h = rect.bottom()
-    return x,y,w,h
+
 
 def StraightenImage(img):
     detector = dlib.get_frontal_face_detector()
@@ -91,34 +80,41 @@ def StraightenImage(img):
         angle = np.degrees(angle)
 
     
+
+    img = crop_image(img, rect)
+    cv2.imshow("cropped", img)
     img = Image.fromarray(img)
+    
     img = np.array(img.rotate(angle))
+    
+    
+    
     
     return img
 
-def crop_image(img):
-    x,y,w,h = return_rectangle(img)
-    crop_img = img[y:y+h, x:x+w]
-    cropped_image = cv2.resize(img, (255,255))
-    return cropped_image
 
 def Load_image(path):
     img = cv2.imread(path)
     return img
 
+def crop_image(img, rect):
+    x = rect.left()
+    y = rect.top()
+    w = rect.right()
+    h = rect.bottom()
+    img = img[y-20:h+20,x-20:w+20]
+    return img
 
 
+    
 
-img = Load_image("tilthead.jpg")
+
+img = Load_image("images (1).jpg")
 img = StraightenImage(img)
 
-x,y,w,h = return_rectangle(img)
 
-faces = img[y:y + h, x:x + w]
-cv2.imshow("face",faces) 
-#img = img[y:coordinate_y, x:coordinate_x]
-cropped_image = img
-#cv2.rectangle(img,(x,y), (x+w, y+h), (0, 0, 255), 2)
-cv2.imshow("image", cropped_image)
+
+
+cv2.imshow("image", img)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
